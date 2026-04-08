@@ -2,7 +2,7 @@
   "name": "SiPetan - Laporan Penyuluhan Pertanian",
   "short_name": "SiPetan",
   "description": "Aplikasi Input Laporan Kegiatan Penyuluhan Pertanian",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "theme_color": "#2e7d32",
   "background_color": "#f8faf5",
