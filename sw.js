@@ -1,82 +1,87 @@
-// Service Worker untuk SiPetan PWA
-// Versi stabil - hanya cache file yang pasti ada
+// Service Worker untuk SiPetan - Versi Subfolder Fix
+const CACHE_NAME = 'sipetan-v4';
 
-const CACHE_NAME = 'sipetan-v2';
+// Dapatkan base path secara otomatis (contoh: /sipetan/)
+const getBasePath = () => {
+  const path = self.location.pathname;
+  return path.substring(0, path.lastIndexOf('/') + 1);
+};
 
-// Hanya file yang PASTI ADA di folder Anda
+const BASE_PATH = getBasePath();
+
+// File yang akan di-cache
 const urlsToCache = [
-  './',
-  './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json'
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'style.css',
+  BASE_PATH + 'app.js',
+  BASE_PATH + 'manifest.json'
 ];
 
 // Install Service Worker
 self.addEventListener('install', event => {
-  console.log('[SW] Installing...');
+  console.log('[SW] Install dengan base path:', BASE_PATH);
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Caching files...');
-        return cache.addAll(urlsToCache);
+      .then(async cache => {
+        try {
+          await cache.addAll(urlsToCache);
+          console.log('[SW] Cache berhasil');
+        } catch (err) {
+          console.log('[SW] Cache gagal:', err);
+        }
       })
-      .catch(err => console.log('[SW] Cache failed:', err))
   );
-  // Force aktivasi SW baru
   self.skipWaiting();
 });
 
-// Fetch dengan strategi cache-first, fallback ke network
+// Fetch dengan strategi cache-first
 self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
+  
+  // Perbaiki request yang salah ke root
+  let fixedRequest = event.request;
+  if (requestUrl.pathname === '/manifest.json') {
+    fixedRequest = new Request(BASE_PATH + 'manifest.json');
+  } else if (requestUrl.pathname === '/sw.js') {
+    fixedRequest = new Request(BASE_PATH + 'sw.js');
+  }
+  
   event.respondWith(
-    caches.match(event.request)
+    caches.match(fixedRequest)
       .then(response => {
-        // Return cached response if found
         if (response) {
           return response;
         }
-        // Otherwise fetch from network
-        return fetch(event.request)
+        return fetch(fixedRequest)
           .then(response => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            if (!response || response.status !== 200) {
               return response;
             }
-            
-            // Clone response untuk cache
             const responseToCache = response.clone();
-            
             caches.open(CACHE_NAME)
               .then(cache => {
-                cache.put(event.request, responseToCache);
-              })
-              .catch(err => console.log('[SW] Cache put failed:', err));
-            
+                cache.put(fixedRequest, responseToCache);
+              });
             return response;
           })
-          .catch(err => {
-            console.log('[SW] Fetch failed:', err);
-            // Bisa return fallback page jika diperlukan
-            return new Response('Offline - SiPetan tidak dapat terhubung', {
-              status: 503,
-              statusText: 'Service Unavailable'
-            });
+          .catch(() => {
+            // Fallback ke index.html
+            return caches.match(BASE_PATH + 'index.html');
           });
       })
   );
 });
 
-// Aktifkan Service Worker dan hapus cache lama
+// Aktifkan Service Worker
 self.addEventListener('activate', event => {
   console.log('[SW] Activating...');
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('[SW] Deleting old cache:', cacheName);
+          if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Hapus cache lama:', cacheName);
             return caches.delete(cacheName);
           }
         })
