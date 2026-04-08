@@ -10,22 +10,11 @@
     <meta name="apple-mobile-web-app-title" content="SiPetan">
     
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
-    <!-- Icons untuk berbagai platform -->
-    <link rel="icon" type="image/png" sizes="72x72" href="icons/icon-72.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="icons/icon-128.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="icons/icon-144.png">
-    <link rel="icon" type="image/png" sizes="152x152" href="icons/icon-152.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="384x384" href="icons/icon-384.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232e7d32'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E🌿%3C/text%3E%3C/svg%3E">
     
     <title>SiPetan - Laporan Kegiatan Penyuluhan Pertanian</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -39,19 +28,19 @@
     </div>
     
     <!-- Install Prompt untuk PWA -->
-    <div id="installPrompt" style="display: none; position: fixed; bottom: 80px; left: 16px; right: 16px; background: var(--primary); color: white; padding: 16px; border-radius: 16px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+    <div id="installPrompt" style="display: none; position: fixed; bottom: 80px; left: 16px; right: 16px; background: #2e7d32; color: white; padding: 16px; border-radius: 16px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
         <div style="display: flex; align-items: center; gap: 12px;">
             <i class="fas fa-download" style="font-size: 24px;"></i>
             <div style="flex: 1;">
                 <strong>Install SiPetan</strong>
                 <p style="font-size: 0.75rem; margin-top: 4px;">Install aplikasi ini di HP Anda untuk akses lebih cepat</p>
             </div>
-            <button id="installBtn" style="background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 24px; font-weight: bold; cursor: pointer;">Install</button>
+            <button id="installBtn" style="background: white; color: #2e7d32; border: none; padding: 8px 16px; border-radius: 24px; font-weight: bold; cursor: pointer;">Install</button>
             <button id="closeInstallBtn" style="background: transparent; color: white; border: none; font-size: 20px; cursor: pointer;">&times;</button>
         </div>
     </div>
     
-    <script src="app.js"></script>
+    <script src="./app.js"></script>
     <script>
         // PWA Installation
         let deferredPrompt;
@@ -88,10 +77,10 @@
             }
         });
         
-        // Service Worker registration
+        // Service Worker registration - PERBAIKI PATH
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('Service Worker registered:', reg))
                     .catch(err => console.log('Service Worker registration failed:', err));
             });
